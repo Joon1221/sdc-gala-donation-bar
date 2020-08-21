@@ -10,7 +10,7 @@ Social Diversity for Children Foundation (SDC) is an organization that focuses
 on helping children with disabilities by raising awareness, providing services,
 and fundraising. This program was created for usage in SDC's 10th Anniversary
 Gala as a donation bar that keeps track of the total amount of funds raised
-From the gala. The gala reached its goal by raising $217,000 in donations.
+from the gala. The gala reached its goal by raising $217,000 in donations.
 
 
 STAFF
@@ -48,13 +48,18 @@ INSTALLATION
 		- # point to python2
 		- export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 	- source ~/.bash_profile
-- Install and Compile OpenCV
+- Install OpenCV
 	- Open terminal and paste the following
 	- brew install opencv
-	- 
 
 
 HOW TO USE
 ----------
 
+- Build and Run the program using Xcode
+- Every time the space bar is pressed, the donation bar goes up by $500
 
+LIBRARIES USED
+--------------
+
+- OpenCV 4.0.1
