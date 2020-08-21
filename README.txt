@@ -23,7 +23,7 @@ Artist : Juan Juan Yin
 WORK PERIOD
 -----------
 
-Start Date: 2019-12-26 
+Start Date: 2019-12-27
 End Date: 2019-12-30
 
 
@@ -35,7 +35,7 @@ INSTALLATION
 	- /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/
 	  install/master/install.sh)"
 	- brew update
-- Install Python 2 and Python 3
+- Install Python 
 	- Open terminal and paste the following
 	- brew install python python3
 	- brew link python
