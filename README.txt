@@ -59,7 +59,7 @@ HOW TO USE
 - Build and Run the program using Xcode
 - Every time the space bar is pressed, the donation bar goes up by $500
 
-LIBRARIES USED
---------------
+LIBRARIES
+---------
 
 - OpenCV 4.0.1
