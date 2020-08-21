@@ -13,9 +13,14 @@
 using namespace std;
 using namespace cv;
 
+//==============================================================================
+// Source: https://stackoverflow.com/questions/40895785/using-opencv-to-overlay-
+//         transparent-image-onto-another-image
+//==============================================================================
+// Function used to apply alpha mask with a given min and max threshold
+//==============================================================================
 Mat applyAlphaMask(int minThresh, int maxThresh, Mat background, Mat forground, int row, int col) {
-    
-    Mat dst;//(src.rows,src.cols,CV_8UC4);
+    Mat dst;
     Mat tmp,alpha;
     
     cvtColor(forground,tmp,COLOR_BGR2GRAY);
@@ -44,68 +49,74 @@ Mat applyAlphaMask(int minThresh, int maxThresh, Mat background, Mat forground, 
 }
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    cout << "Hello1" << endl;
-//    cout << argv[0] << endl;
-    cout << "Hello2" << endl;
 
-    // Create a VideoCapture object and open the input file
-    // If the input is the web camera, pass 0 instead of the video file name
+    // Obtain file path to the assets
     std::string temp(argv[0]);
     string filePath = temp.substr(0,temp.length()-13);
     
+    //--------------------------------------------------------------------------
+    // Create VideoCapture objects for our video files
+    //--------------------------------------------------------------------------
+    
+    // Pre-recorded video of a counter counting up from 0 to 300,000 where every
+    // frame the counter increases by 100
     VideoCapture cap(filePath + "counter.mov");
+    
+    // Pre-recorded video of snow-like particle effects
     VideoCapture cap2(filePath + "transparent_1.mp4");
-//    VideoCapture cap3("transparent_1.mp4");
-    VideoCapture cap4(filePath + "fireworks.mp4");
+    
+//    VideoCapture cap3(filePath + "transparent_2.mp4")
+//    VideoCapture cap4(filePath + "fireworks.mp4");
+    
+    // Pre-recorded video of a looping water wave
     VideoCapture cap5(filePath + "waterlevel.mov");
     
-    Size size(960,1920);//the dst image size,e.g.100x100
-    Mat blue = imread(filePath + "blue.png");
-    Mat lightblue = imread(filePath + "light_blue.png");
     
+    //--------------------------------------------------------------------------
+    // Intialize variables
+    //--------------------------------------------------------------------------
+
+    // Bottom-most layer that acts like the background image
+    Mat blue = imread(filePath + "blue.png");
+    Size size(960,1920);
     resize(blue, blue, size);
     
-    // Check if camera opened successfully
-    if(!cap.isOpened()){
-        cout << "Error opening video stream or file" << endl;
-        return -1;
-    }
+    // the progress bar that increases as the donation counter goes up
+    Mat lightblue = imread(filePath + "light_blue.png");
+   
+    
+    // Used to keep track of the current donation amount
     int count = 1;
     int framecount = 0;
-    bool goalReached = false;
     
+    // Used to store the different layers
     Mat background;
     Mat prevBackground;
 
     Mat waterlevel;
     Mat prevWaterLevel;
     
+    //--------------------------------------------------------------------------
+    // Main loop
+    //--------------------------------------------------------------------------
     while(true) {
-        Mat curImg;
+        // Checks to see if the counter needs to be increased, and if so, reads in a single frame of the pre-recorded counter video
         if (framecount < count) {
-//            if (framecount == 10000) {
-//                goalReached = true;
-//            }
             
-            //delay
-//            usleep(50000);
             background.copyTo(prevBackground);
             cap >> background;
 
-
-            // If the frame is empty, break immediately
             if (background.empty()) {
                 prevBackground.copyTo(background);
             }
-            Size size(960,1920);//the dst image size,e.g.100x100
-            resize(background,background,size);//resize image
+            Size size(960,1920);
+            resize(background,background,size); //resize image
             
             framecount++;
         }
         
-
-        
+        // Uses the current frame count to calculate and resize the light blue progress bar accordingly
+        Mat curImg;
         if ((1920 - (framecount*0.801+1) - 35) >= 0) {
             Size sizeLightBlue(960,framecount*0.801+1);
             resize(lightblue, lightblue, sizeLightBlue);
@@ -117,6 +128,8 @@ int main(int argc, const char * argv[]) {
             curImg = applyAlphaMask(10, 255, blue, lightblue, 35, 0);
         }
         
+        
+        // The water wave loop is calculated and placed seemlessly on top of the progress bar to add animation
         waterlevel.copyTo(prevWaterLevel);
         cap5 >> waterlevel;
         
@@ -130,85 +143,40 @@ int main(int argc, const char * argv[]) {
         else {
             curImg = applyAlphaMask(100, 255, curImg, waterlevel, 0, 0);
         }
+        
+        // Combine background layer with progress bar layer
         Mat temp;
         background.copyTo(temp);
         temp = applyAlphaMask(10, 255, curImg, temp, 0, 0);
 
+        // Apply the top most layer (snow-like particles)
         Mat forground;
         cap2 >> forground;
 
         if (forground.empty()) {
+            // If the video is finished, restart the loop
             cap2 = VideoCapture(filePath + "transparent_1.mp4");
         }
         else {
-            Size size(960,1920);//the dst image size,e.g.100x100
-            resize(forground,forground,size);//resize image
+            Size size(960,1920);
+            resize(forground,forground,size); //resize image
             
+            // Combine all previous layers with snow-like particles layer
             Mat outputImg;
             outputImg = applyAlphaMask(250, 255, temp , forground, 0, 0);
-
-
-            if (goalReached) {
-//            if (false) {
-                Mat firework;
-                cap4 >> firework;
-                Size size(960,1920);//the dst image size,e.g.100x100
-                if (firework.empty()) {
-                    cout << "hello3" << endl;
-
-                    goalReached = false;
-                    
-                }
-                else {
-                    resize(firework,firework,size);//resize image
-
-//                    cout << "hello1" << endl;
-                    Mat dst1;//(src.rows,src.cols,CV_8UC4);
-                    Mat tmp1,alpha1;
-                    
-                    cvtColor(firework,tmp1,COLOR_BGR2GRAY);
-                    threshold(tmp1,alpha1,100,255,THRESH_BINARY);
-                    
-                    Mat rgb1[3];
-                    split(firework,rgb1);
-                    
-                    Mat rgba1[4]={rgb1[0],rgb1[1],rgb1[2],alpha1};
-                    merge(rgba1,4,firework);
-                    
-                    //============================================================
-                    // APPLY MASK
-                    //============================================================
-                    
-                    Mat mask1;
-                    vector<Mat> layers1;
-                    
-                    split(firework, layers1); // seperate channels
-                    Mat rgb21[3] = { layers1[0],layers1[1],layers1[2] };
-                    mask1 = layers1[3]; // png's alpha channel used as mask
-                    merge(rgb21, 3, firework);  // put together the RGB channels, now transp insn't transparent
-//                    Mat outputImg1;
-//                    outputImg.copyTo(outputImg1);
-                    
-                    firework.copyTo(outputImg.rowRange(0, 0 + firework.rows).colRange(0, 0 + firework.cols), mask1);
-//                    cout << "hello2" << endl;
-
-                }
-            }
-            Size sizeOutput(1440, 900);
-            resize(outputImg,outputImg,sizeOutput);//resize image
 
             // Display the resulting frame
             imshow("frame", outputImg);
         }
-        // Press  ESC on keyboard to exit
+        
+        // If spacebar is pressed, play the counter video for 5 frames
         char c=(char)waitKey(25);
         if(c==32)
             count += 5;
     }
-    waitKey();
     
-    cout << "count: " << count << endl;
-    cout << "framecount: " << count << endl;
+//    cout << "count: " << count << endl;
+//    cout << "framecount: " << count << endl;
 
 
     // When everything done, release the video capture object
