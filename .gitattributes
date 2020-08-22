@@ -1,2 +1,4 @@
 counter.mov filter=lfs diff=lfs merge=lfs -text
 fireworks.mp4 filter=lfs diff=lfs merge=lfs -text
+
+build/* linguist-vendored
