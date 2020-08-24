@@ -30,7 +30,7 @@ brew link python
 brew link python3
 ```
 
-### Update ~.bash_profile
+### Update .bash_profile
 ``` Shell
 nano ~/.bash_profile
 ```
@@ -43,6 +43,7 @@ export PATH=/usr/local/bin:$PATH
 # point to python2
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 ```
+Execute .bash_profile
 
 ``` Shell
 source ~/.bash_profile
@@ -55,7 +56,7 @@ brew install opencv
 Usage
 -----
 
-Every time the space bar is pressed, the donation bar goes up by $500
+Every time the space bar is pressed, the donation bar goes up by $500.
 
 
 Staff
