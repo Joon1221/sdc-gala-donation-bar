@@ -1,9 +1,10 @@
 
-
+# SDC Gala Donation Bar
 A program that was used as the donation bar for SDC's 10th Anniversary Gala. It keeps track of the total amount of funds raised from the gala and displays it both numerically and visually. 
 
-
-
+<p align="center">
+  <img src="./assets/demogif.gif" alt="Size Limit CLI" width="600">
+</p>
 
 Installation
 ------------
